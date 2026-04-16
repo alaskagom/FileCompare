@@ -5,6 +5,8 @@ namespace FileCompare
         public Form1()
         {
             InitializeComponent();
+            btnLeftDir.Click += btnLeftDir_Click;
+            btnRightDir.Click += btnRightDir_Click;
         }
 
         private void panel3_Paint(object sender, PaintEventArgs e)
@@ -176,6 +178,73 @@ namespace FileCompare
         private void lvwLeftDir_DrawColumnHeader(object sender, DrawListViewColumnHeaderEventArgs e)
         {
             e.DrawDefault = true;
+        }
+
+        private void btnLeftDir_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(txtLeftDir.Text) || string.IsNullOrWhiteSpace(txtRightDir.Text))
+                return;
+
+            foreach (ListViewItem item in lvwLeftDir.SelectedItems)
+            {
+                var name = item.Text;
+                var srcPath = System.IO.Path.Combine(txtLeftDir.Text, name);
+                if (!System.IO.File.Exists(srcPath)) 
+                    continue;
+
+                var destPath = System.IO.Path.Combine(txtRightDir.Text, name);
+                CopyFileWithConfirmation(srcPath, destPath);
+            }
+
+            // 복사 완료 후 양쪽 리스트 갱신
+            PopulateListView(lvwLeftDir, txtLeftDir.Text);
+            PopulateListView(lvwrightDir, txtRightDir.Text);
+        }
+
+        private void btnRightDir_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(txtLeftDir.Text) || string.IsNullOrWhiteSpace(txtRightDir.Text))
+                return;
+
+            foreach (ListViewItem item in lvwrightDir.SelectedItems)
+            {
+                var name = item.Text;
+                var srcPath = System.IO.Path.Combine(txtRightDir.Text, name);
+                if (!System.IO.File.Exists(srcPath)) 
+                    continue;
+
+                var destPath = System.IO.Path.Combine(txtLeftDir.Text, name);
+                CopyFileWithConfirmation(srcPath, destPath);
+            }
+
+            // 복사 완료 후 양쪽 리스트 갱신
+            PopulateListView(lvwLeftDir, txtLeftDir.Text);
+            PopulateListView(lvwrightDir, txtRightDir.Text);
+        }
+
+        private void CopyFileWithConfirmation(string srcPath, string destPath)
+        {
+            if (System.IO.File.Exists(destPath))
+            {
+                var srcInfo = new System.IO.FileInfo(srcPath);
+                var destInfo = new System.IO.FileInfo(destPath);
+
+                // 날짜 확인: 오래된 파일로 새로운 파일을 덮어쓰는 경우 확인창
+                if (srcInfo.LastWriteTime < destInfo.LastWriteTime)
+                {
+                    string msg = $"[{srcInfo.Name}] 이전 버전의 파일로 대상 폴더의 최신 파일을 덮어쓰시겠습니까?\n\n" +
+                                 $"* 복사할 파일 (이전): {srcInfo.LastWriteTime.ToString("g")}\n" +
+                                 $"* 대상 파일 (최신): {destInfo.LastWriteTime.ToString("g")}";
+
+                    var result = MessageBox.Show(msg, "확인", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                    if (result != DialogResult.Yes)
+                    {
+                        return; // 복사 취소
+                    }
+                }
+            }
+
+            System.IO.File.Copy(srcPath, destPath, true);
         }
     }
 }
