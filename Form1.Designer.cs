@@ -32,6 +32,9 @@
             splitContainer1 = new SplitContainer();
             panel3 = new Panel();
             lvwLeftDir = new ListView();
+            nameleft = new ColumnHeader();
+            columnHeader2 = new ColumnHeader();
+            columnHeader3 = new ColumnHeader();
             panel2 = new Panel();
             btnLeftDir = new Button();
             panel1 = new Panel();
@@ -39,6 +42,9 @@
             txtLeftDir = new TextBox();
             panel6 = new Panel();
             lvwrightDir = new ListView();
+            columnHeader1 = new ColumnHeader();
+            columnHeader4 = new ColumnHeader();
+            columnHeader5 = new ColumnHeader();
             panel5 = new Panel();
             btnCopyFromRight = new Button();
             txtRightDir = new TextBox();
@@ -100,11 +106,31 @@
             // lvwLeftDir
             // 
             lvwLeftDir.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            lvwLeftDir.Columns.AddRange(new ColumnHeader[] { nameleft, columnHeader2, columnHeader3 });
+            lvwLeftDir.FullRowSelect = true;
+            lvwLeftDir.GridLines = true;
             lvwLeftDir.Location = new Point(21, 20);
             lvwLeftDir.Name = "lvwLeftDir";
             lvwLeftDir.Size = new Size(432, 274);
             lvwLeftDir.TabIndex = 0;
             lvwLeftDir.UseCompatibleStateImageBehavior = false;
+            lvwLeftDir.View = View.Details;
+            lvwLeftDir.SelectedIndexChanged += lvwLeftDir_SelectedIndexChanged;
+            // 
+            // nameleft
+            // 
+            nameleft.Text = "이름";
+            nameleft.Width = 200;
+            // 
+            // columnHeader2
+            // 
+            columnHeader2.Text = "크기";
+            columnHeader2.Width = 100;
+            // 
+            // columnHeader3
+            // 
+            columnHeader3.Text = "수정일";
+            columnHeader3.Width = 140;
             // 
             // panel2
             // 
@@ -117,7 +143,7 @@
             // 
             // btnLeftDir
             // 
-            btnLeftDir.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnLeftDir.Anchor = AnchorStyles.None;
             btnLeftDir.Font = new Font("맑은 고딕", 12F, FontStyle.Regular, GraphicsUnit.Point, 129);
             btnLeftDir.Location = new Point(359, 31);
             btnLeftDir.Name = "btnLeftDir";
@@ -158,8 +184,8 @@
             // 
             // panel6
             // 
-            panel6.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             panel6.Controls.Add(lvwrightDir);
+            panel6.Dock = DockStyle.Bottom;
             panel6.Location = new Point(0, 164);
             panel6.Name = "panel6";
             panel6.Size = new Size(469, 311);
@@ -168,20 +194,38 @@
             // lvwrightDir
             // 
             lvwrightDir.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            lvwrightDir.Columns.AddRange(new ColumnHeader[] { columnHeader1, columnHeader4, columnHeader5 });
+            lvwrightDir.FullRowSelect = true;
+            lvwrightDir.GridLines = true;
             lvwrightDir.Location = new Point(17, 20);
             lvwrightDir.Name = "lvwrightDir";
             lvwrightDir.Size = new Size(432, 274);
             lvwrightDir.TabIndex = 1;
             lvwrightDir.UseCompatibleStateImageBehavior = false;
+            lvwrightDir.View = View.Details;
+            // 
+            // columnHeader1
+            // 
+            columnHeader1.Text = "이름";
+            columnHeader1.Width = 200;
+            // 
+            // columnHeader4
+            // 
+            columnHeader4.Text = "크기";
+            columnHeader4.Width = 100;
+            // 
+            // columnHeader5
+            // 
+            columnHeader5.Text = "수정일";
+            columnHeader5.Width = 150;
             // 
             // panel5
             // 
-            panel5.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             panel5.Controls.Add(btnCopyFromRight);
             panel5.Controls.Add(txtRightDir);
             panel5.Location = new Point(0, 92);
             panel5.Name = "panel5";
-            panel5.Size = new Size(469, 383);
+            panel5.Size = new Size(469, 73);
             panel5.TabIndex = 1;
             // 
             // btnCopyFromRight
@@ -197,7 +241,7 @@
             // 
             // txtRightDir
             // 
-            txtRightDir.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            txtRightDir.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             txtRightDir.Font = new Font("맑은 고딕", 10.2F, FontStyle.Regular, GraphicsUnit.Point, 129);
             txtRightDir.Location = new Point(13, 23);
             txtRightDir.Name = "txtRightDir";
@@ -216,6 +260,7 @@
             // 
             // btnRightDir
             // 
+            btnRightDir.Anchor = AnchorStyles.None;
             btnRightDir.Font = new Font("맑은 고딕", 12F, FontStyle.Regular, GraphicsUnit.Point, 129);
             btnRightDir.Location = new Point(13, 31);
             btnRightDir.Name = "btnRightDir";
@@ -268,5 +313,11 @@
         private Button btnRightDir;
         private Button btnCopyFromLeft;
         private TextBox txtLeftDir;
+        private ColumnHeader nameleft;
+        private ColumnHeader columnHeader2;
+        private ColumnHeader columnHeader3;
+        private ColumnHeader columnHeader1;
+        private ColumnHeader columnHeader4;
+        private ColumnHeader columnHeader5;
     }
 }
