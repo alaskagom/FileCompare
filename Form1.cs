@@ -108,6 +108,49 @@ namespace FileCompare
             var dirInfo = new System.IO.DirectoryInfo(path);
             if (!dirInfo.Exists) return;
 
+            // 1. 하위 폴더 먼저 출력
+            foreach (var ld in dirInfo.GetDirectories())
+            {
+                var litem = new ListViewItem(ld.Name);
+                litem.SubItems.Add("<DIR>");
+                litem.SubItems.Add(ld.LastWriteTime.ToString("g"));
+
+                System.IO.DirectoryInfo? rd = null;
+                string otherDir = (lvw == lvwLeftDir) ? txtRightDir.Text : txtLeftDir.Text;
+
+                if (!string.IsNullOrWhiteSpace(otherDir))
+                {
+                    string targetPath = System.IO.Path.Combine(otherDir, ld.Name);
+                    if (System.IO.Directory.Exists(targetPath))
+                    {
+                        rd = new System.IO.DirectoryInfo(targetPath);
+                    }
+                }
+
+                if (rd == null)
+                {
+                    litem.ForeColor = Color.Purple;
+                }
+                else
+                {
+                    if (ld.LastWriteTime.ToString("g") == rd.LastWriteTime.ToString("g")) 
+                    {
+                        litem.ForeColor = Color.Black;
+                    }
+                    else if (ld.LastWriteTime < rd.LastWriteTime)
+                    {
+                        litem.ForeColor = Color.Gray;
+                    }
+                    else
+                    {
+                        litem.ForeColor = Color.Red;
+                    }
+                }
+
+                lvw.Items.Add(litem);
+            }
+
+            // 2. 파일 출력
             foreach (var lf in dirInfo.GetFiles())
             {
                 // 3단계: 사용자정의출력
@@ -189,11 +232,16 @@ namespace FileCompare
             {
                 var name = item.Text;
                 var srcPath = System.IO.Path.Combine(txtLeftDir.Text, name);
-                if (!System.IO.File.Exists(srcPath)) 
-                    continue;
-
                 var destPath = System.IO.Path.Combine(txtRightDir.Text, name);
-                CopyFileWithConfirmation(srcPath, destPath);
+
+                if (System.IO.Directory.Exists(srcPath))
+                {
+                    CopyDirectoryWithConfirmation(srcPath, destPath);
+                }
+                else if (System.IO.File.Exists(srcPath)) 
+                {
+                    CopyFileWithConfirmation(srcPath, destPath);
+                }
             }
 
             // 복사 완료 후 양쪽 리스트 갱신
@@ -210,11 +258,16 @@ namespace FileCompare
             {
                 var name = item.Text;
                 var srcPath = System.IO.Path.Combine(txtRightDir.Text, name);
-                if (!System.IO.File.Exists(srcPath)) 
-                    continue;
-
                 var destPath = System.IO.Path.Combine(txtLeftDir.Text, name);
-                CopyFileWithConfirmation(srcPath, destPath);
+
+                if (System.IO.Directory.Exists(srcPath))
+                {
+                    CopyDirectoryWithConfirmation(srcPath, destPath);
+                }
+                else if (System.IO.File.Exists(srcPath)) 
+                {
+                    CopyFileWithConfirmation(srcPath, destPath);
+                }
             }
 
             // 복사 완료 후 양쪽 리스트 갱신
@@ -245,6 +298,29 @@ namespace FileCompare
             }
 
             System.IO.File.Copy(srcPath, destPath, true);
+        }
+
+        private void CopyDirectoryWithConfirmation(string srcDir, string destDir)
+        {
+            var dir = new System.IO.DirectoryInfo(srcDir);
+            if (!dir.Exists) return;
+
+            if (!System.IO.Directory.Exists(destDir))
+            {
+                System.IO.Directory.CreateDirectory(destDir);
+            }
+
+            foreach (var file in dir.GetFiles())
+            {
+                string targetPath = System.IO.Path.Combine(destDir, file.Name);
+                CopyFileWithConfirmation(file.FullName, targetPath);
+            }
+
+            foreach (var subDir in dir.GetDirectories())
+            {
+                string targetPath = System.IO.Path.Combine(destDir, subDir.Name);
+                CopyDirectoryWithConfirmation(subDir.FullName, targetPath);
+            }
         }
     }
 }
